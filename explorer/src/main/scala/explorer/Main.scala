@@ -12,13 +12,13 @@ object Main {
     args.toList match {
       case jars :: symbol :: Nil =>
         val classpath = Classpath(args.mkString(java.io.File.pathSeparator))
-        val symtab = GlobalSymbolTable(classpath ++ bootClasspath.get)
-        val symbols = new Symtab {
+        val internal = GlobalSymbolTable(classpath ++ bootClasspath.get)
+        val symtab = new Symtab {
           def info(symbol: Symbol): Option[SymbolInformation] = {
-            symtab.info(symbol.value).map(i => new SymbolInformation(i)(this))
+            internal.info(symbol.value).map(i => new SymbolInformation(i)(this))
           }
         }
-        symbols.info(Symbol(symbol)) match {
+        symtab.info(Symbol(symbol)) match {
           case Some(info) =>
             println(info)
           case None =>
